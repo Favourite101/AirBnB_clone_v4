@@ -41,19 +41,25 @@ $(document).ready(function() {
       }
     });
   
-    // Fetch places on document ready
-    $.ajax({
-      url: "http://0.0.0.0:5001/api/v1/places_search",
-      method: "POST", // Ensure it's a POST request
-      contentType: "application/json",
-      data: JSON.stringify({}), // Empty JSON object in the body
-      success: function(data) {
-        // Clear existing place elements before adding new ones
-        $('.section.places').empty();
+    // Fetch places on search button click
+    $('.filters button').click(function() {
+      // Prepare data object with selected amenity IDs
+      const data = {
+        amenities: selectedAmenities
+      };
   
-        for (const place of data) {
-          // Create article element for each place
-          const article = $('<article>');
+      $.ajax({
+        url: "http://0.0.0.0:5001/api/v1/places_search",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(data), // Include selected amenities
+        success: function(data) {
+          // Clear existing place elements before adding new ones
+          $('.section.places').empty();
+  
+          for (const place of data) {
+            // Create article element for each place
+            const article = $('<article>');
   
           // Create title_box div
           const titleBox = $('<div class="title_box">');
@@ -73,14 +79,15 @@ $(document).ready(function() {
           description.text(place.description);
           article.append(description);
   
-          // Append the article to the places section
-          $('.section.places').append(article);
+            // Append the article to the places section
+            $('.section.places').append(article);
+          }
+        },
+        error: function() {
+          console.error("Error fetching places");
+          // Optionally add a message indicating error loading places
         }
-      },
-      error: function() {
-        console.error("Error fetching places");
-        // Optionally add a message indicating error loading places
-      }
+      });
     });
   });
   
