@@ -40,5 +40,47 @@ $(document).ready(function() {
         // Optionally add a class or message indicating error
       }
     });
+  
+    // Fetch places on document ready
+    $.ajax({
+      url: "http://0.0.0.0:5001/api/v1/places_search",
+      method: "POST", // Ensure it's a POST request
+      contentType: "application/json",
+      data: JSON.stringify({}), // Empty JSON object in the body
+      success: function(data) {
+        // Clear existing place elements before adding new ones
+        $('.section.places').empty();
+  
+        for (const place of data) {
+          // Create article element for each place
+          const article = $('<article>');
+  
+          // Create title_box div
+          const titleBox = $('<div class="title_box">');
+          titleBox.append(`<h2>${place.name}</h2>`);
+          titleBox.append(`<div class="price_by_night">${place.price_by_night}</div>`);
+          article.append(titleBox);
+  
+          // Create information div
+          const information = $('<div class="information">');
+          information.append(`<div class="max_guest">${place.max_guest} Guest${place.max_guest !== 1 ? 's' : ''}</div>`);
+          information.append(`<div class="number_rooms">${place.number_rooms} Bedroom${place.number_rooms !== 1 ? 's' : ''}</div>`);
+          information.append(`<div class="number_bathrooms">${place.number_bathrooms} Bathroom${place.number_bathrooms !== 1 ? 's' : ''}</div>`);
+          article.append(information);
+  
+          // Create description div (without Owner)
+          const description = $('<div class="description">');
+          description.text(place.description);
+          article.append(description);
+  
+          // Append the article to the places section
+          $('.section.places').append(article);
+        }
+      },
+      error: function() {
+        console.error("Error fetching places");
+        // Optionally add a message indicating error loading places
+      }
+    });
   });
   
